@@ -15,10 +15,10 @@ jobs:
 
       # Step 2: Make the bash script executable
       - name: Make script executable
-        run: chmod +x bash_scripts/run_remote.sh
+        run: chmod +x home/pranav/run_remote.sh
 
       # Step 3: Run the bash script
       - name: Run Prechecks on Remote Machine
         env:
           SSH_PASSWORD: ${{ secrets.VM }}  # Secret from the 'vm' environment
-        run: bash bash_scripts/run_remote.sh "$SSH_PASSWORD"
+        run: bash home/pranav/run_remote.sh "$SSH_PASSWORD"
