@@ -12,9 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install SSH client and sshpass
-        run: sudo apt-get update && sudo apt-get install -y openssh-client sshpass
-
       - name: Run Prechecks on Remote Machine
         run: |
           echo "Connecting to remote machine via SSH"
