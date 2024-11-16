@@ -5,16 +5,25 @@ on: [push]
 jobs:
   run-prechecks:
     runs-on: self-hosted
-    #labels:[self-hosted, Linux, X64]
+    # Uncomment and update the labels if your self-hosted runner uses specific labels
+    # labels: [self-hosted, Linux, X64]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Install SSH client and sshpass
+        run: sudo apt-get update && sudo apt-get install -y openssh-client sshpass
 
       - name: Run Prechecks on Remote Machine
         env:
           SSH_PASSWORD: ${{ secrets.UBUNTU }}
         run: |
           echo "Connecting to remote machine via SSH"
-          sshpass -p "$SSH_PASSWORD" ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null karthik@192.168.1.105 \
+          sshpass -p "$SSH_PASSWORD" ssh -tt -vvv \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -o PreferredAuthentications=password \
+            -o PubkeyAuthentication=no \
+            karthik@192.168.1.105 \
             'echo "Running commands on remote machine:" && whoami && ip a && uname -a'
