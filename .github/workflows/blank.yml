@@ -16,11 +16,9 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y openssh-client sshpass
 
       - name: Run Prechecks on Remote Machine
-        env:
-          SSH_PASSWORD: ${{ secrets.UBUNTU }}
         run: |
           echo "Connecting to remote machine via SSH"
-          sshpass -p "$SSH_PASSWORD" ssh -tt -vvv \
+          sshpass -p "Test1234" ssh -tt -vvv \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             -o PreferredAuthentications=password \
