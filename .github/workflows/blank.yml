@@ -24,4 +24,4 @@ jobs:
             whoami
             ip a
             uname -a
-EOF
+
