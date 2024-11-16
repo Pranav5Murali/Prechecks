@@ -1,0 +1,27 @@
+name: Remote Prechecks Workflow
+
+on: [push]
+
+jobs:
+  run-prechecks:
+    runs-on: self-hosted
+    labels: [self-hosted, Linux, X64]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install SSH client and sshpass
+        run: sudo apt-get update && sudo apt-get install -y openssh-client sshpass
+
+      - name: Run Prechecks on Remote Machine
+        env:
+          SSH_PASSWORD: ${{ secrets.UBUNTU }}
+        run: |
+          echo "Connecting to remote machine via SSH"
+          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no karthik@192.168.1.105 << 'EOF'
+            echo "Running commands on remote machine:"
+            whoami
+            ip a
+            uname -a
+EOF
