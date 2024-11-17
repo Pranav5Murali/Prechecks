@@ -1,4 +1,4 @@
-name: Remote Python script execute
+name: Remote Python script execute1
 
 on: [push]
 
