@@ -10,4 +10,3 @@ echo "executing the python script on the remote machine"
 sshpass -p "$ssh_pwd"\
 ssh karthik@192.168.1.105\
 'cd /home/karthik/target && python3 info1.py'
-EOF
