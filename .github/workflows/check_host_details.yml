@@ -1,0 +1,23 @@
+name: Remote Prechecks Workflow Bash
+
+on: [push]
+
+jobs:
+  run-prechecks:
+    runs-on: self-hosted
+
+    environment: vm  # Specify the environment where the secret is stored
+
+    steps:
+      # Step 1: Checkout the code from your GitHub repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Make script executable
+        run: chmod +x ./bash_scripts/copy_and_execute.sh
+
+   
+      - name: Run Prechecks on Remote Machine
+        env:
+          SSH_PASSWORD: ${{ secrets.VM }}  # Secret from the 'vm' environment
+        run: bash ./bash_scripts/copy_and_execute.sh "$SSH_PASSWORD"
