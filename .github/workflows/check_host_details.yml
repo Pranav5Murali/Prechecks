@@ -1,4 +1,4 @@
-name: Remote Prechecks Workflow Bash
+name: Remote Python script execute
 
 on: [push]
 
