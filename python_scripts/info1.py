@@ -1,8 +1,7 @@
 import os
 import socket
 
-print("Login name:",os.getlogin())
-temp=socket.gethostname()
-print("hostname is:",temp)
-print("IP_details",socket.gethostbyname(temp))
-
+print("Login name:", os.getenv("USER", "unknown"))
+temp = socket.gethostname()
+print("Hostname is:", temp)
+print("IP details:", socket.gethostbyname(temp))
