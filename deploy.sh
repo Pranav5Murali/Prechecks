@@ -1,21 +1,28 @@
 #!/bin/bash
 
-# Configuration
-SLAVE_USER="user"
+# Input Variables
+ssh_pwd="$1"
+SLAVE_USER="user1"
 SLAVE_HOST="192.168.1.105"
-SLAVE_PWD=$1
-APP_PATH="/home/user/Python_github"
+APP_PATH="/home/user1/Prechecks"
+GIT_REPO="https://github.com/Pranav5Murali/Prechecks.git"
 
-# Step 1: Copy project to the slave
-echo "Copying project to slave machine..."
-sshpass -p "$SLAVE_PWD" scp -r . $SLAVE_USER@$SLAVE_HOST:$APP_PATH
+echo "Step 1: Clone or update the repository on the slave machine"
+sshpass -p "$ssh_pwd" ssh $SLAVE_USER@$SLAVE_HOST bash <<EOF
+  if [ -d "$APP_PATH" ]; then
+    echo "Repository already exists. Pulling latest changes..."
+    cd $APP_PATH && git pull
+  else
+    echo "Cloning repository..."
+    git clone $GIT_REPO $APP_PATH
+  fi
+EOF
 
-# Step 2: SSH into slave and deploy the app
-echo "Deploying app on slave machine..."
-sshpass -p "$SLAVE_PWD" ssh $SLAVE_USER@$SLAVE_HOST bash <<EOF
-    cd $APP_PATH
-    docker-compose down || true
-    docker-compose up --build -d
+echo "Step 2: Build and run the Docker app on the slave machine"
+sshpass -p "$ssh_pwd" ssh $SLAVE_USER@$SLAVE_HOST bash <<EOF
+  cd $APP_PATH
+  docker-compose down || true
+  docker-compose up --build -d
 EOF
 
 echo "Deployment complete! Flask app should be accessible at http://$SLAVE_HOST:5001"
