@@ -1,10 +1,5 @@
 name: Remote Prechecks Workflow Bash2
 
-on:
-  push:
-    branches:
-      - Ubuntu  # Trigger workflow only on pushes to the 'Ubuntu' branch
-
 jobs:
   run-prechecks:
     runs-on: self-hosted
