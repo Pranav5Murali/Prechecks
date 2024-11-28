@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  system_info:
+    build: ./system_info
+    container_name: system_info
+    ports:
+      - "5000:5000"
+
+  flask_app:
+    build: ./flask_app
+    container_name: flask_app
+    ports:
+      - "5001:5001"
+    depends_on:
+      - system_info
