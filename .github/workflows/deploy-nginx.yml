@@ -17,12 +17,6 @@ jobs:
       - name: Make Scripts Executable
         run: chmod +x ./bash_scripts/*.sh
         
-      - name: Debug Environment Variable
-        env:
-          SSH_PASSWORD: ${{ secrets.VM }}
-        run: |
-          echo "Password length: $(echo -n $SSH_PASSWORD | wc -c)"
-
       # Step 3: Run Remote Prechecks
       - name: Run Remote Prechecks
         env:
