@@ -1,0 +1,31 @@
+name: Deploy Nginx and Run Remote Prechecks
+
+on:
+  push:
+    branches:
+      - Ubuntu  # Adjust to the branch you want to trigger on
+
+jobs:
+  deploy-and-check:
+    runs-on: self-hosted
+
+    steps:
+      # Step 1: Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Make All Scripts Executable
+      - name: Make Scripts Executable
+        run: chmod +x ./bash_scripts/*.sh
+
+      # Step 3: Run Remote Prechecks
+      - name: Run Remote Prechecks
+        env:
+          SSH_PASSWORD: ${{ secrets.SLAVE_VM_PASSWORD }}
+        run: bash ./bash_scripts/check_remote.sh "$SSH_PASSWORD"
+
+      # Step 4: Deploy Nginx to Slave Machine
+      - name: Deploy Nginx to Slave Machine
+        env:
+          SSH_PASSWORD: ${{ secrets.SLAVE_VM_PASSWORD }}
+        run: bash ./bash_scripts/deploy_nginx.sh "$SSH_PASSWORD"
