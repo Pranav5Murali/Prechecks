@@ -1,13 +1,12 @@
-name: Deploy Nginx and Run Remote Prechecks
-
+name: Deploy Nginx and Run Remote Prechecks1
 on:
   push:
     branches:
-      - Ubuntu  # Adjust to the branch you want to trigger on
-
+      - Ubuntu
 jobs:
   deploy-and-check:
     runs-on: self-hosted
+    environment: vm
 
     steps:
       # Step 1: Checkout Code
@@ -17,6 +16,12 @@ jobs:
       # Step 2: Make All Scripts Executable
       - name: Make Scripts Executable
         run: chmod +x ./bash_scripts/*.sh
+        
+      - name: Debug Environment Variable
+        env:
+          SSH_PASSWORD: ${{ secrets.VM }}
+        run: |
+          echo "Password length: $(echo -n $SSH_PASSWORD | wc -c)"
 
       # Step 3: Run Remote Prechecks
       - name: Run Remote Prechecks
