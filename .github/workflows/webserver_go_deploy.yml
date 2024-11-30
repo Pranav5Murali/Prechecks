@@ -1,4 +1,4 @@
-name: Deploy Webserver using GO-1
+name: Deploy Webserver using GO-2
 
 on:
   push:
