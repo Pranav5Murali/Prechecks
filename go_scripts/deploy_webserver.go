@@ -2,88 +2,79 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 )
 
 func main() {
 	// Declare variables
-	var containerName string = "lightweight-webserver"
-	var imageName string = "httpd:alpine"
-	var networkName string = "custom-bridge-network"
-	var subnet string = "192.168.1.0/24"
-	var staticIP string = "192.168.1.150"
-	var portMapping string = "8085:85"
-	var err error
-	var cmd *exec.Cmd
+	containerName := "lightweight-webserver"
+	imageName := "httpd:alpine"
+	networkName := "custom-bridge-network"
+	subnet := "192.168.1.0/24"
+	staticIP := "192.168.1.150"
+	portMapping := "8085:85"
 
-	// Step 1: Create a custom Docker network (if it doesn't exist)
+	// Helper to run commands
+	runCommand := func(name string, args ...string) error {
+		cmd := exec.Command(name, args...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		fmt.Printf("Running: %s %v\n", name, args)
+		err := cmd.Run()
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+		}
+		return err
+	}
+
+	// Step 1: Ensure Docker is installed
+	fmt.Println("Checking if Docker is installed...")
+	if err := runCommand("docker", "--version"); err != nil {
+		fmt.Println("Error: Docker is not installed or not accessible.")
+		os.Exit(1)
+	}
+
+	// Step 2: Create a custom Docker network (if it doesn't exist)
 	fmt.Printf("Creating custom Docker network: %s with subnet: %s...\n", networkName, subnet)
-	cmd = exec.Command("docker", "network", "create", "--subnet", subnet, networkName)
-	cmd.Stdout = exec.Stdout
-	cmd.Stderr = exec.Stderr
-	err = cmd.Run()
-	if err != nil {
-		fmt.Println("Warning: Network might already exist. Error:", err)
+	if err := runCommand("docker", "network", "create", "--subnet", subnet, networkName); err != nil {
+		fmt.Println("Warning: Network might already exist or could not be created.")
 	}
 
-	// Step 2: Pull the lightweight web server image
+	// Step 3: Pull the lightweight web server image
 	fmt.Println("Pulling the lightweight httpd:alpine image...")
-	cmd = exec.Command("docker", "pull", imageName)
-	cmd.Stdout = exec.Stdout
-	cmd.Stderr = exec.Stderr
-	err = cmd.Run()
-	if err != nil {
-		fmt.Println("Error pulling the image:", err)
-		return
+	if err := runCommand("docker", "pull", imageName); err != nil {
+		fmt.Println("Error pulling the image. Exiting.")
+		os.Exit(1)
 	}
 
-	// Step 3: Stop any existing container (ignore error if it doesn't exist)
+	// Step 4: Stop any existing container
 	fmt.Printf("Stopping the container: %s...\n", containerName)
-	cmd = exec.Command("docker", "stop", containerName)
-	cmd.Stdout = exec.Stdout
-	cmd.Stderr = exec.Stderr
-	err = cmd.Run()
-	if err != nil {
-		fmt.Println("Warning: Error stopping container (might not exist):", err)
-	}
+	runCommand("docker", "stop", containerName)
 
-	// Step 4: Remove any existing container (ignore error if it doesn't exist)
+	// Step 5: Remove any existing container
 	fmt.Printf("Removing the container: %s...\n", containerName)
-	cmd = exec.Command("docker", "rm", containerName)
-	cmd.Stdout = exec.Stdout
-	cmd.Stderr = exec.Stderr
-	err = cmd.Run()
-	if err != nil {
-		fmt.Println("Warning: Error removing container (might not exist):", err)
-	}
+	runCommand("docker", "rm", containerName)
 
-	// Step 5a: Create the container with static IP and port mapping
+	// Step 6: Create the container with static IP and port mapping
 	fmt.Printf("Creating a new container: %s with image: %s and static IP: %s...\n", containerName, imageName, staticIP)
-	cmd = exec.Command(
+	if err := runCommand(
 		"docker", "create",
 		"--network", networkName,
 		"--ip", staticIP,
 		"-p", portMapping,
 		"--name", containerName,
 		imageName,
-	)
-	cmd.Stdout = exec.Stdout
-	cmd.Stderr = exec.Stderr
-	err = cmd.Run()
-	if err != nil {
-		fmt.Println("Error creating the container:", err)
-		return
+	); err != nil {
+		fmt.Println("Error creating the container. Exiting.")
+		os.Exit(1)
 	}
 
-	// Step 5b: Start the created container
+	// Step 7: Start the created container
 	fmt.Printf("Starting the container: %s...\n", containerName)
-	cmd = exec.Command("docker", "start", containerName)
-	cmd.Stdout = exec.Stdout
-	cmd.Stderr = exec.Stderr
-	err = cmd.Run()
-	if err != nil {
-		fmt.Println("Error starting the container:", err)
-		return
+	if err := runCommand("docker", "start", containerName); err != nil {
+		fmt.Println("Error starting the container. Exiting.")
+		os.Exit(1)
 	}
 
 	// Success message
