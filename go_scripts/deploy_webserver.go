@@ -9,7 +9,7 @@ import (
 func main() {
 	// Declare configuration variables
 	var containerName string = "lightweight-webserver"
-	var imageName string = "httpd:alpine"
+	var imageName string = "jitesoft/httpd"
 	var networkName string = "custom-bridge-network"
 	var subnet string = "192.168.1.0/24"
 	var staticIP string = "192.168.1.150"
