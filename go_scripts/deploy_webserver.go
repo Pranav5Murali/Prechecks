@@ -8,38 +8,27 @@ import (
 
 func main() {
 	// Declare configuration variables
-	containerName := "lightweight-webserver"
-	imageName := "httpd:alpine"
-	networkName := "custom-bridge-network"
-	subnet := "192.168.1.0/24"
-	staticIP := "192.168.1.150"
-	portMapping := "8085:85"
+	var containerName string = "lightweight-webserver"
+	var imageName string = "httpd:alpine"
+	var networkName string = "custom-bridge-network"
+	var subnet string = "192.168.1.0/24"
+	var staticIP string = "192.168.1.150"
+	var portMapping string = "8085:85"
 
-	// Helper function to execute commands
-	runCommand := func(name string, args ...string) error {
-		cmd := exec.Command(name, args...)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		fmt.Printf("Running: %s %v\n", name, args)
-		err := cmd.Run()
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-		}
-		return err
-	}
 
-	// Step 1: Ensure Docker is installed
-	fmt.Println("Checking if Docker is installed...")
-	if err := runCommand("docker", "--version"); err != nil {
-		fmt.Println("Error: Docker is not installed or not accessible.")
-		os.Exit(1)
-	}
-
-	// Step 2: Check if the Docker network exists, create if not
-	fmt.Printf("Ensuring custom Docker network: %s with subnet: %s exists...\n", networkName, subnet)
-	if err := runCommand("docker", "network", "inspect", networkName); err != nil {
+	// Step 1: Check if the Docker network exists, create if not
+	fmt.Printf("Ensuring Docker network: %s with subnet: %s exists...\n", networkName, subnet)
+	var cmdInspectNetwork *exec.Cmd = exec.Command("docker", "network", "inspect", networkName)
+	cmdInspectNetwork.Stdout = os.Stdout
+	cmdInspectNetwork.Stderr = os.Stderr
+	var errInspectNetwork error = cmdInspectNetwork.Run()
+	if errInspectNetwork != nil {
 		fmt.Printf("Network %s does not exist. Creating...\n", networkName)
-		if err := runCommand("docker", "network", "create", "--subnet", subnet, networkName); err != nil {
+		var cmdCreateNetwork *exec.Cmd = exec.Command("docker", "network", "create", "--subnet", subnet, networkName)
+		cmdCreateNetwork.Stdout = os.Stdout
+		cmdCreateNetwork.Stderr = os.Stderr
+		var errCreateNetwork error = cmdCreateNetwork.Run()
+		if errCreateNetwork != nil {
 			fmt.Println("Error: Failed to create Docker network. Exiting.")
 			os.Exit(1)
 		}
@@ -47,42 +36,46 @@ func main() {
 		fmt.Println("Network already exists. Skipping creation.")
 	}
 
-	// Step 3: Pull the lightweight web server image
+	// Step 2: Pull the lightweight web server image
 	fmt.Println("Pulling the lightweight httpd:alpine image...")
-	if err := runCommand("docker", "pull", imageName); err != nil {
+	var cmdPullImage *exec.Cmd = exec.Command("docker", "pull", imageName)
+	cmdPullImage.Stdout = os.Stdout
+	cmdPullImage.Stderr = os.Stderr
+	var errPullImage error = cmdPullImage.Run()
+	if errPullImage != nil {
 		fmt.Println("Error: Failed to pull the Docker image. Exiting.")
 		os.Exit(1)
 	}
 
-	// Step 4: Stop any existing container
-	fmt.Printf("Stopping the container: %s (if it exists)...\n", containerName)
-	runCommand("docker", "stop", containerName) // Ignore errors if the container doesn't exist
-
-	// Step 5: Remove any existing container
-	fmt.Printf("Removing the container: %s (if it exists)...\n", containerName)
-	runCommand("docker", "rm", containerName) // Ignore errors if the container doesn't exist
-
-	// Step 6: Create a new container with a static IP and port mapping
+	// Step 3: Create a new container with a static IP and port mapping
 	fmt.Printf("Creating a new container: %s with image: %s and static IP: %s...\n", containerName, imageName, staticIP)
-	if err := runCommand(
+	var cmdCreateContainer *exec.Cmd = exec.Command(
 		"docker", "create",
 		"--network", networkName,
 		"--ip", staticIP,
 		"-p", portMapping,
 		"--name", containerName,
 		imageName,
-	); err != nil {
+	)
+	cmdCreateContainer.Stdout = os.Stdout
+	cmdCreateContainer.Stderr = os.Stderr
+	var errCreateContainer error = cmdCreateContainer.Run()
+	if errCreateContainer != nil {
 		fmt.Println("Error: Failed to create the container. Exiting.")
 		os.Exit(1)
 	}
 
-	// Step 7: Start the newly created container
+	// Step 4: Start the newly created container
 	fmt.Printf("Starting the container: %s...\n", containerName)
-	if err := runCommand("docker", "start", containerName); err != nil {
+	var cmdStartContainer *exec.Cmd = exec.Command("docker", "start", containerName)
+	cmdStartContainer.Stdout = os.Stdout
+	cmdStartContainer.Stderr = os.Stderr
+	var errStartContainer error = cmdStartContainer.Run()
+	if errStartContainer != nil {
 		fmt.Println("Error: Failed to start the container. Exiting.")
 		os.Exit(1)
 	}
 
 	// Success message
-	fmt.Printf("Lightweight web server deployed successfully with static IP: %s\n", staticIP)
+	fmt.Printf("Container %s deployed successfully with static IP: %s\n", containerName, staticIP)
 }
