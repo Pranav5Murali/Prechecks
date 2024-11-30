@@ -13,5 +13,4 @@ sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE
 echo "Running commands on remote machine:"
 whoami
 ip a
-uname -a
 EOF
