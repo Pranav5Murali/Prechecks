@@ -1,0 +1,33 @@
+name: Deploy Webserver and Run Remote Prechecks
+
+on:
+  push:
+    branches:
+      - Ubuntu
+
+jobs:
+  deploy-and-check:
+    runs-on: self-hosted
+    environment: vm
+
+    steps:
+      # Step 1: Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+
+      # Step 2: Make All Scripts Executable
+      - name: Make Scripts Executable
+        run: chmod +x ./bash_scripts/*.sh
+
+      # Step 3: Run Remote Prechecks
+      - name: Run Remote Prechecks
+        env:
+          SSH_PASSWORD: ${{ secrets.VM }}
+        run: bash ./bash_scripts/check_remote.sh "$SSH_PASSWORD"
+
+      # Step 4: Deploy Webserver Using Go on Slave Machine
+      - name: Deploy Webserver Using Go
+        env:
+          SSH_PASSWORD: ${{ secrets.VM }}
+        run: bash ./bash_scripts/deploy_webserver.sh "$SSH_PASSWORD"
