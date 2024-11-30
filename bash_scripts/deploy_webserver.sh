@@ -8,7 +8,7 @@ REMOTE_USER="user1"
 REMOTE_IP="192.168.1.105"
 
 # Path to the Go source code
-LOCAL_SOURCE="./bash_scripts/deploy_webserver.go"
+LOCAL_SOURCE="./go_scripts/deploy_webserver.go"
 REMOTE_SOURCE="/tmp/deploy_webserver.go"
 
 echo "Transferring Go source code to the remote machine..."
