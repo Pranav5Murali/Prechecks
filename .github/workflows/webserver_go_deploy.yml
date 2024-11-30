@@ -1,4 +1,4 @@
-name: Deploy Webserver and Run Remote Prechecks
+name: Deploy Webserver using GO
 
 on:
   push:
