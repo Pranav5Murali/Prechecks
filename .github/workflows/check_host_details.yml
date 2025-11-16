@@ -1,6 +1,9 @@
 name: Remote Python script execute1
-
-on: [push]
+on:
+  push:
+    branches:
+      - Ubuntu
+  workflow_dispatch:
 
 jobs:
   run-prechecks:
