@@ -3,7 +3,7 @@ name: Remote Prechecks Workflow Bash2
 on:
   push:
     branches:
-      - Ubuntu1
+      - Ubuntu
 
 jobs:
   run-prechecks:
