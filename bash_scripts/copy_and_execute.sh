@@ -1,11 +1,17 @@
 #!/bin/bash
+
 ssh_pwd="$1"
+TARGET_HOST="ecstatic_kowalevski"
+TARGET_USER="user1"
 
-echo "Connecting to the remote machine and copy script"
+echo "Copying python script to target container..."
 sshpass -p "$ssh_pwd" \
-scp python_scripts/info1.py user1@192.168.1.105:/home/user1/target
+scp -o StrictHostKeyChecking=no \
+python_scripts/info1.py \
+${TARGET_USER}@${TARGET_HOST}:/home/user1/target/
 
-echo "executing the python script on the remote machine"
+echo "Executing python script on target container..."
 sshpass -p "$ssh_pwd" \
-ssh user1@192.168.1.105 \
+ssh -o StrictHostKeyChecking=no \
+${TARGET_USER}@${TARGET_HOST} \
 'cd /home/user1/target && python3 info1.py'
