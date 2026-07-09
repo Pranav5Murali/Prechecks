@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ssh_pwd="$1"
-TARGET_HOST="ecstatic_kowalevski"
+TARGET_HOST="192.168.1.105"
 TARGET_USER="user1"
 
 echo "Copying python script to target container..."
