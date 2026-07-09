@@ -6,7 +6,7 @@ SSH_PASSWORD="$1"
 
 # Remote target details
 REMOTE_USER="user1"
-REMOTE_HOST="ubuntu-target"
+REMOTE_HOST="192.168.1.105"
 
 echo "Connecting to remote machine..."
 
