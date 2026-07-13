@@ -20,15 +20,5 @@ jobs:
       - name: Hello Runner
         run: |
           echo "Hello from my self-hosted runner"
+          whoami
 
-      - name: SSH Remote Test
-        env:
-          SSH_PASSWORD: ${{ secrets.VM }}
-        run: |
-          sudo apt update
-          sudo apt install -y sshpass openssh-client
-
-          sshpass -p "$SSH_PASSWORD" ssh \
-            -o StrictHostKeyChecking=no \
-            root@172.17.0.3 \
-            "hostname && uname -a"
